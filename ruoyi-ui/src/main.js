@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
+import * as echarts from 'echarts'
 
 import 'lib-flexible'
 import '@/assets/styles/index.scss' // global css
@@ -40,6 +41,7 @@ import VueMeta from 'vue-meta'
 import DictData from '@/components/DictData'
 
 // 全局方法挂载
+Vue.prototype.$echarts = echarts;
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime

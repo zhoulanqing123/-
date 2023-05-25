@@ -74,6 +74,15 @@
           v-hasPermi="['shop:huajia:export']"
         >导出</el-button>
       </el-col>
+      <el-col :span="3">
+        <el-button
+          type=""
+          plain
+          icon="el-icon-chart"
+          size="mini"
+          @click="openFenXi = true"
+        >数据分析</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -215,6 +224,15 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <template>
+        <el-dialog  @open="handleFenXi()" :title="title1" :visible.sync="openFenXi" width="1000px" :style="{minHeight: '2000px'}" append-to-body>
+            <div>
+              <div id="newecharts" style="width:500px;height:500px"  ref="chart"></div>
+            </div>
+        </el-dialog>
+    </template>
+
   </div>
 </template>
 
@@ -242,8 +260,10 @@ export default {
       tongji : {},
       // 弹出层标题
       title: "",
+      title1: "数据报表",
       // 是否显示弹出层
       open: false,
+      openFenXi: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -398,7 +418,61 @@ export default {
       this.download('shop/huajia/export', {
         ...this.queryParams
       }, `huajia_${new Date().getTime()}.xlsx`)
+    },
+    initEcharts() {
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = this.$echarts.init(this.$refs.chart);
+      // 绘制图表
+      let option = {
+        title: {
+          text: 'ECharts 入门示例'
+        },
+        tooltip: {},
+        xAxis: {
+          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+        },
+        yAxis: {},
+        series: [{
+          name: '销量',
+          type: 'bar',
+          data: [5, 20, 36, 10, 10, 20]
+        }]
+      };
+      myChart.setOption(option)
+    },
+    /** 数据分析操作 */
+    handleFenXi() {
+      this.$nextTick(() => {
+        //  执行echarts方法
+        this.initEcharts()
+      })
     }
-  }
+  },
+    // data () {
+    //   return {};
+    // },
+    // initCharts () {
+    //   let myChart = this.$echarts.init(this.$refs.chart);
+    //   console.log(this.$refs.chart)
+    //   // 绘制图表
+    //   myChart.setOption({
+    //     title: { text: '在Vue中使用echarts' },
+    //     tooltip: {},
+    //     xAxis: {
+    //       data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+    //     },
+    //     yAxis: {},
+    //     series: [{
+    //       name: '销量',
+    //       type: 'bar',
+    //       data: [5, 20, 36, 10, 10, 20]
+    //     }]
+    //   });
+    // }
+  mounted () {
+    console.log(this.chartData);
+    this.initCharts();
+
+    }
 };
 </script>
