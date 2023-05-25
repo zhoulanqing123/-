@@ -47,7 +47,7 @@ public class ShopBaozi extends BaseEntity
     private BigDecimal getMoney;
 
     /** 当日营业额（总收入） */
-    @Excel(name = "当日营业额", readConverterExp = "总=收入")
+    @Excel(name = "当日营业额")
     private BigDecimal getAllMoney;
 
     /** 当日进货金额 */
