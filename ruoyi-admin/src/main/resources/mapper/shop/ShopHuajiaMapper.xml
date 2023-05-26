@@ -27,6 +27,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="curGetAllMoney"    column="curGetAllMoney"    />
         <result property="curPutAllMoney"    column="curPutAllMoney"    />
         <result property="curActualMoney"    column="curActualMoney"    />
+        <result property="curGengMoney"    column="curGengMoney"    />
+        <result property="curFengMoney"    column="curFengMoney"    />
+        <result property="curFengaAndShuoMoney"    column="curFengaAndShuoMoney"    />
     </resultMap>
 
     <sql id="selectShopHuajiaVo">
@@ -81,6 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="putHouseMoney != null">#{putHouseMoney},</if>
             <if test="actualMoney != null">#{actualMoney},</if>
             <if test="guoSalary != null">#{guoSalary},</if>
+            <if test="guoSalary != null">#{guoSalary},</if>
             <if test="shuoSalary != null">#{shuoSalary},</if>
             <if test="putContent != null">#{putContent},</if>
             <if test="remark != null">#{remark},</if>
@@ -124,11 +128,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y年 %m月') as curMonth,
             SUM(get_all_money) as curGetAllMoney,
             SUM(put_money) as curPutAllMoney,
-            SUM(actual_money)	as curActualMoney
+            SUM(actual_money)	as curActualMoney,
+            SUM(guo_salary)	as curFengMoney,
+            SUM(shuo_salary)	as curGengMoney,
+            SUM(guo_salary)+SUM(shuo_salary) as curFengaAndShuoMoney
         FROM
             shop_huajia
         WHERE
-                date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m');
+                date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+        --         //查询当前月份
+--         select date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH), '%m')
+--         //查询上个月月份
+--         select date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH), '%m')
+--         //查询下个月份
+--         select date_format(DATE_SUB(curdate(), INTERVAL -1 MONTH), '%m')
+    </select>
+
+    <select id="selectZheXianTongJi" parameterType="ShopHuajia" resultType="map">
+        SELECT
+            create_date,get_all_money,actual_money,guo_salary,shuo_salary
+        FROM
+            shop_huajia
+        WHERE
+                date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+        ORDER BY create_date asc
         --         //查询当前月份
 --         select date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH), '%m')
 --         //查询上个月月份

@@ -5,6 +5,7 @@ import java.util.List;
 import com.ruoyi.shop.baozi.domain.ShopBaozi;
 import com.ruoyi.shop.huajia.domain.ShopHuajia;
 import com.ruoyi.shop.huajia.vo.HuaJiaTongJiVo;
+import com.ruoyi.shop.huajia.vo.ZheXianTongJiVo;
 
 /**
  * huajiaService接口
@@ -63,4 +64,6 @@ public interface IShopHuajiaService
     public int deleteShopHuajiaById(Long id);
 
     HuaJiaTongJiVo selectTongJi(ShopHuajia shopHuajia);
+
+    ZheXianTongJiVo selectZheXianTongJi(ShopHuajia shopHuajia);
 }

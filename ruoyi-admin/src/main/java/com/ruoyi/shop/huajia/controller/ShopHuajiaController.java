@@ -112,4 +112,12 @@ public class ShopHuajiaController extends BaseController
     {
         return success(shopHuajiaService.selectTongJi(shopHuajia));
     }
+    /**
+     * 统计数据(折线图)
+     */
+    @PostMapping("zheXianTongJi")
+    public AjaxResult zheXIanTongJi(@RequestBody ShopHuajia shopHuajia)
+    {
+        return success(shopHuajiaService.selectZheXianTongJi(shopHuajia));
+    }
 }

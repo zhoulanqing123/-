@@ -51,3 +51,12 @@ export function huaJiaTongJi(data) {
 
   })
 }
+
+export function huaJiaZheXianTongJi(data) {
+    return request({
+      url: '/shop/huajia/zheXianTongJi',
+      method: 'post',
+      data: data
+
+    })
+  }

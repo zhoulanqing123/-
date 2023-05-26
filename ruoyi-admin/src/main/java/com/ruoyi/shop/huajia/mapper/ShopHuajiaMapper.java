@@ -1,6 +1,8 @@
 package com.ruoyi.shop.huajia.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import com.ruoyi.shop.huajia.domain.ShopHuajia;
 import com.ruoyi.shop.huajia.vo.HuaJiaTongJiVo;
 
@@ -61,4 +63,6 @@ public interface ShopHuajiaMapper
     public int deleteShopHuajiaByIds(Long[] ids);
 
     HuaJiaTongJiVo selectTongJi(ShopHuajia shopHuajia);
+
+    List<Map> selectZheXianTongJi(ShopHuajia shopHuajia);
 }
