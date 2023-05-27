@@ -84,7 +84,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="putHouseMoney != null">#{putHouseMoney},</if>
             <if test="actualMoney != null">#{actualMoney},</if>
             <if test="guoSalary != null">#{guoSalary},</if>
-            <if test="guoSalary != null">#{guoSalary},</if>
             <if test="shuoSalary != null">#{shuoSalary},</if>
             <if test="putContent != null">#{putContent},</if>
             <if test="remark != null">#{remark},</if>

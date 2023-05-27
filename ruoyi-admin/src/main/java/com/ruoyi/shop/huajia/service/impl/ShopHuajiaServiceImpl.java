@@ -2,11 +2,14 @@ package com.ruoyi.shop.huajia.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.shop.baozi.domain.ShopBaozi;
 import com.ruoyi.shop.huajia.vo.HuaJiaTongJiVo;
+import com.ruoyi.shop.huajia.vo.ZheXianTongJiVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.shop.huajia.mapper.ShopHuajiaMapper;
@@ -64,6 +67,8 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
         BigDecimal getPayMoney = shopHuajia.getGetPayMoney() == null ? BigDecimal.valueOf(0) : shopHuajia.getGetPayMoney();
         BigDecimal getWechatMoney = shopHuajia.getGetWechatMoney() == null ? BigDecimal.valueOf(0) : shopHuajia.getGetWechatMoney();
         BigDecimal getMoney = shopHuajia.getGetMoney() == null ? BigDecimal.valueOf(0) : shopHuajia.getGetMoney();
+        String remark = shopHuajia.getRemark() == null ? " " : shopHuajia.getRemark();
+        shopHuajia.setRemark(remark);
         //总收入=微信+支付宝+现金
         BigDecimal allMoney = getPayMoney.add(getWechatMoney).add(getMoney);
         shopHuajia.setName(NAME);
@@ -175,6 +180,35 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
     @Override
     public HuaJiaTongJiVo selectTongJi(ShopHuajia shopHuajia) {
         return shopHuajiaMapper.selectTongJi(shopHuajia);
+    }
+
+    @Override
+    public ZheXianTongJiVo selectZheXianTongJi(ShopHuajia shopHuajia) {
+        ZheXianTongJiVo vo = new ZheXianTongJiVo();
+        List<Map> huaJiaList = shopHuajiaMapper.selectZheXianTongJi(shopHuajia);
+        List<String> dataList = new ArrayList<>();
+        List<String> getAllList = new ArrayList<>();
+        List<String> getActualList = new ArrayList<>();
+        List<String> shuoList = new ArrayList<>();
+        List<String> guoList = new ArrayList<>();
+        for(Map data:huaJiaList){
+            String createDatedata= data.get("create_date")+"";
+            dataList.add(createDatedata);
+            String getAllMoney= data.get("get_all_money")+"";
+            getAllList.add(getAllMoney);
+            String actualMoney= data.get("actual_money")+"";
+            getActualList.add(actualMoney);
+            String guoSalary= data.get("guo_salary")+"";
+            guoList.add(guoSalary);
+            String shuoSalary= data.get("shuo_salary")+"";
+            shuoList.add(shuoSalary);
+        }
+        vo.setDataList(dataList);
+        vo.setGetActualList(getActualList);
+        vo.setGetAllList(getAllList);
+        vo.setShuoList(shuoList);
+        vo.setGuoList(guoList);
+        return vo;
     }
 
     public static String getWeek(Date date){

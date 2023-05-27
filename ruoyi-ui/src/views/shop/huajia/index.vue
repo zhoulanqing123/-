@@ -87,31 +87,52 @@
     </el-row>
 
     <el-div :gutter="40" ref="tongji" :model="tongji" :data="getTongJi"  >
-      <el-col :span="5"  >
+      <el-col :span="6"  >
         <el-div
           class="padding-content" style="color: yellowgreen;font-size: 16px;font-weight:bold"
         >当前月份:{{tongji.curMonth}}</el-div>
       </el-col>
 
-      <el-col :span="5">
+      <el-col :span="6">
         <el-div
           class="padding-content" style="color: yellowgreen;font-size: 16px;font-weight:bold"
         >本月营业额:{{tongji.curGetAllMoney}}</el-div>
       </el-col>
 
-      <el-col :span="5">
+      <el-col :span="6">
         <el-div
           size="large"
           class="padding-content" style="color: yellowgreen;font-size: 16px;font-weight:bold"
         >本月进货金额:{{tongji.curPutAllMoney}}</el-div>
       </el-col>
 
-      <el-col :span="5">
+      <el-col :span="6">
         <el-div
           type="warning"
           size="large"
           class="padding-content" style="color: yellowgreen;font-size: 16px;font-weight:bold"
         >本月净利润:{{tongji.curActualMoney}}</el-div>
+      </el-col>
+      <el-col :span="8">
+        <el-div
+          type="warning"
+          size="large"
+          class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
+        >本月郭工资:{{tongji.curFengMoney}}</el-div>
+      </el-col>
+      <el-col :span="8">
+        <el-div
+          type="warning"
+          size="large"
+          class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
+        >本月硕工资:{{tongji.curGengMoney}}</el-div>
+      </el-col>
+      <el-col :span="8">
+        <el-div
+          type="warning"
+          size="large"
+          class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
+        >本月工资总和:{{tongji.curFengaAndShuoMoney}}</el-div>
       </el-col>
     </el-div>
 
@@ -226,9 +247,9 @@
     </el-dialog>
 
     <template>
-        <el-dialog  @open="handleFenXi()" :title="title1" :visible.sync="openFenXi" width="1000px" :style="{minHeight: '2000px'}" append-to-body>
+        <el-dialog  @open="handleFenXi()" :title="title1" :visible.sync="openFenXi" width="1800px" :style="{minHeight: '2000px'}" append-to-body>
             <div>
-              <div id="newecharts" style="width:500px;height:500px"  ref="chart"></div>
+              <div id="newecharts" style="width:1800px;height:500px"  ref="chart"></div>
             </div>
         </el-dialog>
     </template>
@@ -237,12 +258,25 @@
 </template>
 
 <script>
-import { listHuajia, getHuajia, delHuajia, addHuajia, updateHuajia,huaJiaTongJi } from "@/api/shop/huajia";
+import {
+  listHuajia,
+  getHuajia,
+  delHuajia,
+  addHuajia,
+  updateHuajia,
+  huaJiaTongJi,
+  huaJiaZheXianTongJi
+} from "@/api/shop/huajia";
 
 export default {
   name: "Huajia",
   data() {
     return {
+      date :[],
+      actual : [],
+      all : [],
+      guo : [],
+      shuo : [],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -420,37 +454,86 @@ export default {
       }, `huajia_${new Date().getTime()}.xlsx`)
     },
     initEcharts() {
+      // let date = [];
+      // let actual = [];
+      // let all = [];
+      // let shuo = [];
+      // let guo = [];
+      huaJiaZheXianTongJi(this.form).then(response => {
+        console.log(response);
+        let data = response.data;
+        this.date = data.dataList;
+        console.log(this.date);
+        this.actual = data.getActualList;
+        this.all = data.getAllList;
+        this.guo = data.guoList;
+        this.shuo = data.shuoList;
+        let myChart = this.$echarts.init(this.$refs.chart);
+        // 绘制图表
+        let option = {
+          title: {
+            text: '本月收入'
+          },
+          legend: {
+            data: ['总收入', '净利润', '硕工资', '凤工资']
+          },
+          tooltip: {},
+          axisLabel : {
+            interval : 0,
+            rotate : 30,
+            magin :10,
+          },
+          xAxis: {
+            name: '日期',
+            data: this.date
+          },
+          yAxis: {
+            name: '金额'
+
+          },
+          series: [
+            {
+              name: '总收入',
+              type: 'line',
+
+              data: this.all
+            },
+            {
+              name: '净利润',
+              type: 'line',
+              data: this.actual
+            },
+            {
+              name: '硕工资',
+              type: 'line',
+
+              data: this.shuo
+            },
+            {
+              name: '凤工资',
+              type: 'line',
+              data: this.guo
+            }
+          ]
+        };
+        myChart.setOption(option)
+      });
+
       // 基于准备好的dom，初始化echarts实例
-      let myChart = this.$echarts.init(this.$refs.chart);
-      // 绘制图表
-      let option = {
-        title: {
-          text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-        },
-        yAxis: {},
-        series: [{
-          name: '销量',
-          type: 'bar',
-          data: [5, 20, 36, 10, 10, 20]
-        }]
-      };
-      myChart.setOption(option)
+
     },
     /** 数据分析操作 */
     handleFenXi() {
       this.$nextTick(() => {
+
         //  执行echarts方法
-        this.initEcharts()
       })
+      this.initEcharts()
     }
   },
   mounted () {
-    console.log(this.chartData);
-    this.initCharts();
+    // console.log(this.chartData);
+    // this.initCharts();
 
     }
 };
