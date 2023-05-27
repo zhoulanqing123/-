@@ -16,5 +16,6 @@ public class HuaJiaTongJiVo {
     private String curGengMoney;
     private String curFengMoney;
     private String curFengaAndShuoMoney;
+    private String curPutHouseMoney;
 }
 

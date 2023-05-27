@@ -30,6 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="curGengMoney"    column="curGengMoney"    />
         <result property="curFengMoney"    column="curFengMoney"    />
         <result property="curFengaAndShuoMoney"    column="curFengaAndShuoMoney"    />
+        <result property="curPutHouseMoney"    column="curPutHouseMoney"    />
     </resultMap>
 
     <sql id="selectShopHuajiaVo">
@@ -128,6 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             SUM(get_all_money) as curGetAllMoney,
             SUM(put_money) as curPutAllMoney,
             SUM(actual_money)	as curActualMoney,
+            SUM(put_house_money)	as curPutHouseMoney,
             SUM(guo_salary)	as curFengMoney,
             SUM(shuo_salary)	as curGengMoney,
             SUM(guo_salary)+SUM(shuo_salary) as curFengaAndShuoMoney

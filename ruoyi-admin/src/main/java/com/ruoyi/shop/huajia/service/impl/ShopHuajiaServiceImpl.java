@@ -208,6 +208,15 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
         vo.setGetAllList(getAllList);
         vo.setShuoList(shuoList);
         vo.setGuoList(guoList);
+
+        HuaJiaTongJiVo huaJiaTongJiVo = shopHuajiaMapper.selectTongJi(shopHuajia);
+        vo.setGetAllMoney(huaJiaTongJiVo.getCurGetAllMoney());
+        vo.setGetActualMoney(huaJiaTongJiVo.getCurActualMoney());
+        vo.setPutAllMoney(huaJiaTongJiVo.getCurPutAllMoney());
+        vo.setGuoSalary(huaJiaTongJiVo.getCurFengMoney());
+        vo.setShuoSalary(huaJiaTongJiVo.getCurGengMoney());
+        vo.setAllSalary(huaJiaTongJiVo.getCurFengaAndShuoMoney());
+        vo.setPutHouseMoney(huaJiaTongJiVo.getCurPutHouseMoney());
         return vo;
     }
 

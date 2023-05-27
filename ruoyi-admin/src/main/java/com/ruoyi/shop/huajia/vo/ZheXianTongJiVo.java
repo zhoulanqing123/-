@@ -20,4 +20,18 @@ public class ZheXianTongJiVo {
     private List<String> shuoList;
 
     private List<String> guoList;
+
+    private String getAllMoney;
+
+    private String getActualMoney;
+
+    private String putAllMoney;
+
+    private String shuoSalary;
+
+    private String guoSalary;
+
+    private String allSalary;
+
+    private String putHouseMoney;
 }
