@@ -9,6 +9,14 @@
           placeholder="请选择当天时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="统计月份" prop="queryMonth">
+        <el-date-picker clearable
+          v-model="queryParams.queryMonth"
+          type="month"
+          value-format="yyyy-MM"
+          placeholder="请选择统计月份">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item label="当日星期" prop="day">
         <el-input
           v-model="queryParams.day"
@@ -252,6 +260,7 @@ export default {
         createDate: null,
         day: null,
         getAllMoney: null,
+        queryMonth: null
       },
       defaultTemp :{
         fangzu : 70
@@ -298,7 +307,7 @@ export default {
     /** 查询包子统计数据 */
     getTongJi(){
       this.loading = true;
-      baoZiTongJi(this.form).then(response => {
+      baoZiTongJi(this.queryParams).then(response => {
         this.tongji = response.data;
         this.loading = false;
       });

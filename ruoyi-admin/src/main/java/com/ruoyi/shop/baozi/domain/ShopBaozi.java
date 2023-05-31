@@ -26,6 +26,9 @@ public class ShopBaozi extends BaseEntity
     @Excel(name = "当天时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date createDate;
 
+    @JsonFormat(pattern = "yyyy-MM")
+    private Date queryMonth;
+
     /** 当日星期 */
     @Excel(name = "当日星期")
     private String day;
@@ -74,7 +77,15 @@ public class ShopBaozi extends BaseEntity
     @Excel(name = "进货内容")
     private String putContent;
 
-    public void setId(Long id) 
+    public Date getQueryMonth() {
+        return queryMonth;
+    }
+
+    public void setQueryMonth(Date queryMonth) {
+        this.queryMonth = queryMonth;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
