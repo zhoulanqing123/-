@@ -39,6 +39,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createDate != null "> and create_date = #{createDate}</if>
             <if test="day != null  and day != ''"> and day = #{day}</if>
             <if test="getAllMoney != null "> and get_all_money = #{getAllMoney}</if>
+            <if test="queryMonth != null ">
+                and date_format(create_date, '%Y %m') = date_format(DATE_SUB(#{queryMonth}, INTERVAL 0 MONTH),'%Y %m')
+            </if>
+            <if test="queryMonth == null ">
+                and date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+            </if>
         </where>
         order by create_date desc
     </select>
@@ -50,15 +56,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectTongJi" parameterType="ShopBaozi" resultMap="ShopBaoziTongjiVo">
         SELECT
+        <if test="queryMonth == null ">
             date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y年 %m月') as curMonth,
+        </if>
+        <if test="queryMonth != null ">
+            date_format(DATE_SUB(#{queryMonth}, INTERVAL 0 MONTH),'%Y年 %m月') as curMonth,
+        </if>
             SUM(get_all_money) as curGetAllMoney,
             SUM(put_money) as curPutAllMoney,
             SUM(actual_money)	as curActualMoney
         FROM
             shop_baozi
         WHERE
-            date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m');
---         //查询当前月份
+        <if test="queryMonth != null ">
+            date_format(create_date, '%Y %m') = date_format(DATE_SUB(#{queryMonth}, INTERVAL 0 MONTH),'%Y %m')
+        </if>
+        <if test="queryMonth == null ">
+            date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+        </if>   --         //查询当前月份
 --         select date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH), '%m')
 --         //查询上个月月份
 --         select date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH), '%m')

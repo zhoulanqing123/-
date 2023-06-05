@@ -9,6 +9,14 @@
           placeholder="请选择当天时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="统计月份" prop="queryMonth">
+        <el-date-picker clearable
+          v-model="queryParams.queryMonth"
+          type="month"
+          value-format="yyyy-MM"
+          placeholder="请选择统计月份">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item label="当日星期" prop="day">
         <el-input
           v-model="queryParams.day"
@@ -81,7 +89,7 @@
           icon="el-icon-chart"
           size="mini"
           @click="openFenXi = true"
-        >数据分析</el-button>
+        >当月数据报表</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -113,21 +121,28 @@
           class="padding-content" style="color: yellowgreen;font-size: 16px;font-weight:bold"
         >本月净利润:{{tongji.curActualMoney}}</el-div>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="6">
+        <el-div
+          type="warning"
+          size="large"
+          class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
+        >本月扣减房租:{{tongji.curPutHouseMoney}}</el-div>
+      </el-col>
+      <el-col :span="6">
         <el-div
           type="warning"
           size="large"
           class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
         >本月郭工资:{{tongji.curFengMoney}}</el-div>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="6">
         <el-div
           type="warning"
           size="large"
           class="padding-content" style="color: deepskyblue;font-size: 16px;font-weight:bold"
         >本月硕工资:{{tongji.curGengMoney}}</el-div>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="6">
         <el-div
           type="warning"
           size="large"
@@ -247,10 +262,16 @@
     </el-dialog>
 
     <template>
-        <el-dialog  @open="handleFenXi()" :title="title1" :visible.sync="openFenXi" width="1800px" :style="{minHeight: '2000px'}" append-to-body>
+        <el-dialog  @open="handleFenXi()" :title="title1" :visible.sync="openFenXi"  width="1800px"  append-to-body>
+          <div style="overflow: hidden">
             <div>
-              <div id="newecharts" style="width:1800px;height:500px"  ref="chart"></div>
-            </div>
+            <div id="newecharts" style="width:1800px;height:600px"  ref="chart"></div>
+          </div>
+          <div>
+            <div id="newecharts2" style="width:500px;height:200px;float: left"  ref="chart2"></div>
+            <div id="newecharts3" style="width:500px;height:200px;float: right"  ref="chart3"></div>
+          </div>
+          </div>
         </el-dialog>
     </template>
 
@@ -294,7 +315,7 @@ export default {
       tongji : {},
       // 弹出层标题
       title: "",
-      title1: "数据报表",
+      title1: "当月数据报表",
       // 是否显示弹出层
       open: false,
       openFenXi: false,
@@ -305,6 +326,7 @@ export default {
         createDate: null,
         day: null,
         getAllMoney: null,
+        queryMonth: null
       },
       defaultTemp:{
         fangzu : 70,
@@ -340,7 +362,7 @@ export default {
     /** 查询花架统计数据 */
     getTongJi(){
       this.loading = true;
-      huaJiaTongJi(this.form).then(response => {
+      huaJiaTongJi(this.queryParams).then(response => {
         this.tongji = response.data;
         this.loading = false;
       });
@@ -454,16 +476,10 @@ export default {
       }, `huajia_${new Date().getTime()}.xlsx`)
     },
     initEcharts() {
-      // let date = [];
-      // let actual = [];
-      // let all = [];
-      // let shuo = [];
-      // let guo = [];
-      huaJiaZheXianTongJi(this.form).then(response => {
-        console.log(response);
+
+      huaJiaZheXianTongJi(this.queryParams).then(response => {
         let data = response.data;
         this.date = data.dataList;
-        console.log(this.date);
         this.actual = data.getActualList;
         this.all = data.getAllList;
         this.guo = data.guoList;
@@ -475,7 +491,7 @@ export default {
             text: '本月收入'
           },
           legend: {
-            data: ['总收入', '净利润', '硕工资', '凤工资']
+            data: ['每天收入', '净利润', '硕工资', '凤工资']
           },
           tooltip: {},
           axisLabel : {
@@ -491,32 +507,142 @@ export default {
             name: '金额'
 
           },
-          series: [
-            {
-              name: '总收入',
+          series: [{
+              name: '每天收入',
               type: 'line',
-
-              data: this.all
+              data: this.all,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
             },
             {
               name: '净利润',
               type: 'line',
-              data: this.actual
+              data: this.actual,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
             },
             {
               name: '硕工资',
               type: 'line',
-
-              data: this.shuo
+              data: this.shuo,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
             },
             {
               name: '凤工资',
               type: 'line',
-              data: this.guo
+              data: this.guo,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
             }
           ]
         };
         myChart.setOption(option)
+
+        let myChart2 = this.$echarts.init(this.$refs.chart2);
+        let option2 = {
+          legend: {
+            orient: 'vertical',
+            x:'right',      //可设定图例在左、右、居中
+            y:'center',
+            data: [
+            '房租',
+            `净利润`,
+            `进货`
+          ],
+          },
+          title :{
+            text: '本月总收入'+data.getAllMoney
+          },
+          series: [
+            {
+              type: 'pie',      //type为pie，表示图表为饼图
+              radius: '55%',
+              label: {
+                show: true,
+                formatter: "{b} : {c} ({d}%)" // b代表名称，c代表对应值，d代表百分比
+              },
+              data: [
+                {
+                  value: data.putHouseMoney,
+                  name: '房租'
+                },
+                {
+                  value: data.getActualMoney,
+                  name: '净利润'
+                },
+                {
+                  value: data.putAllMoney,
+                  name: '进货'
+                }
+              ]
+            }
+          ]
+        };
+        myChart2.setOption(option2)
+
+        let myChart3 = this.$echarts.init(this.$refs.chart3);
+        let option3 = {
+          legend: {
+            orient: 'vertical',
+            x:'right',      //可设定图例在左、右、居中
+            y:'center',
+            data: [
+              '总工资',
+              `硕工资`,
+              `郭工资`
+            ],
+          },
+          avoidLabelOverlap : false,
+          title: {
+            text: "总工资"+data.allSalary
+          },
+          series: [
+            {
+              type: 'pie',      //type为pie，表示图表为饼图
+              radius: '55%',
+              label: {
+                show: true,
+                formatter: "{b} : {c} ({d}%)" // b代表名称，c代表对应值，d代表百分比
+              },
+              data: [
+                // {
+                //   value: data.allSalary,
+                //   name: '总工资'
+                // },
+                {
+                  value: data.shuoSalary,
+                  name: '硕工资'
+                },
+                {
+                  value: data.guoSalary,
+                  name: '郭工资'
+                }
+              ]
+            }
+          ]
+        };
+        myChart3.setOption(option3)
       });
 
       // 基于准备好的dom，初始化echarts实例
@@ -531,10 +657,10 @@ export default {
       this.initEcharts()
     }
   },
-  mounted () {
-    // console.log(this.chartData);
-    // this.initCharts();
-
-    }
+  // mounted () {
+  //   console.log(this.chartData);
+  //   this.initEcharts();
+  //
+  //   }
 };
 </script>
