@@ -30,12 +30,12 @@ module.exports = {
   // webpack-dev-server 相关配置
   devServer: {
     host: '0.0.0.0',
-    port: port,
+    port: 3000,
     open: true,
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8080`,
+        target: `http://172.17.0.6:8080`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
