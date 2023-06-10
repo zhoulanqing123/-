@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ruoyi.shop.baozi.vo.BaoZiTongJiVo;
+import com.ruoyi.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.shop.baozi.mapper.ShopBaoziMapper;
@@ -73,7 +74,7 @@ public class ShopBaoziServiceImpl implements IShopBaoziService
         if(checkList.size()>0){
             return 0;
         }
-        shopBaozi.setDay(getWeek(createDate));
+        shopBaozi.setDay(DateUtil.getWeek(createDate));
         //设置总收入（当日营业额）
         shopBaozi.setGetAllMoney(allMoney);
         //设置当日净利润
@@ -122,7 +123,7 @@ public class ShopBaoziServiceImpl implements IShopBaoziService
                 return 0;
             }
         }
-        shopBaozi.setDay(getWeek(createDate));
+        shopBaozi.setDay(DateUtil.getWeek(createDate));
         //设置总收入（当日营业额）
         shopBaozi.setGetAllMoney(allMoney);
         //设置当日净利润
@@ -183,15 +184,4 @@ public class ShopBaoziServiceImpl implements IShopBaoziService
         return vo;
     }
 
-    //根据日期取得星期几
-
-    public static String getWeek(Date date){
-
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
-
-        String week = sdf.format(date);
-
-        return week;
-
-    }
 }

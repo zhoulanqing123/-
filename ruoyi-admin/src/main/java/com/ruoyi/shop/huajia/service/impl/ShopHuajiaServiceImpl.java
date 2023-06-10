@@ -2,14 +2,12 @@ package com.ruoyi.shop.huajia.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.ruoyi.shop.baozi.domain.ShopBaozi;
 import com.ruoyi.shop.huajia.vo.HuaJiaTongJiVo;
 import com.ruoyi.shop.huajia.vo.ZheXianTongJiVo;
+import com.ruoyi.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.shop.huajia.mapper.ShopHuajiaMapper;
@@ -80,7 +78,7 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
         if(checkList.size()>0){
             return 0;
         }
-        shopHuajia.setDay(getWeek(createDate));
+        shopHuajia.setDay(DateUtil.getWeek(createDate));
         //设置总收入（当日营业额）
         shopHuajia.setGetAllMoney(allMoney);
         //设置当日净利润
@@ -129,7 +127,7 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
                 return 0;
             }
         }
-        shopHuajia.setDay(getWeek(createDate));
+        shopHuajia.setDay(DateUtil.getWeek(createDate));
         //设置总收入（当日营业额）
         shopHuajia.setGetAllMoney(allMoney);
         //设置当日净利润
@@ -220,13 +218,4 @@ public class ShopHuajiaServiceImpl implements IShopHuajiaService
         return vo;
     }
 
-    public static String getWeek(Date date){
-
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
-
-        String week = sdf.format(date);
-
-        return week;
-
-    }
 }
