@@ -19,6 +19,8 @@ public class ZheXianTongJiVo {
 
     private List<String> shuoList;
 
+    private List<String> gengList;
+
     private List<String> guoList;
 
     private String getAllMoney;

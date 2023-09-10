@@ -89,9 +89,9 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaEnabled: true,
+      captchaEnabled: false,
       // 注册开关
-      register: true,
+      register: false,
       redirect: undefined
     };
   },

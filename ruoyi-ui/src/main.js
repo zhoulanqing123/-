@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
+Element.Dialog.props.closeOnClickModal.default = false;// 全局关闭点遮罩关闭弹框
 import './assets/styles/element-variables.scss'
 import * as echarts from 'echarts'
 

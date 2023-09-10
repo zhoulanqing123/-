@@ -2,10 +2,14 @@ package com.ruoyi.shop.baozi.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.shop.baozi.vo.BaoZiTongJiVo;
+import com.ruoyi.shop.huajia.vo.HuaJiaTongJiVo;
+import com.ruoyi.shop.huajia.vo.ZheXianTongJiVo;
 import com.ruoyi.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -181,6 +185,44 @@ public class ShopBaoziServiceImpl implements IShopBaoziService
     public BaoZiTongJiVo selectTongJi(ShopBaozi shopBaozi) {
         BaoZiTongJiVo vo = new BaoZiTongJiVo();
         vo = shopBaoziMapper.selectTongJi(shopBaozi);
+        return vo;
+    }
+
+    @Override
+    public ZheXianTongJiVo selectZheXianTongJi(ShopBaozi shopBaozi) {
+        ZheXianTongJiVo vo = new ZheXianTongJiVo();
+        List<Map> huaJiaList = shopBaoziMapper.selectZheXianTongJi(shopBaozi);
+        List<String> dataList = new ArrayList<>();
+        List<String> getAllList = new ArrayList<>();
+        List<String> getActualList = new ArrayList<>();
+        List<String> gengList = new ArrayList<>();
+        List<String> guoList = new ArrayList<>();
+        for(Map data:huaJiaList){
+            String createDatedata= data.get("create_date")+"";
+            dataList.add(createDatedata);
+            String getAllMoney= data.get("get_all_money")+"";
+            getAllList.add(getAllMoney);
+            String actualMoney= data.get("actual_money")+"";
+            getActualList.add(actualMoney);
+            String guoSalary= data.get("guo_salary")+"";
+            guoList.add(guoSalary);
+            String gengSalary= data.get("geng_salary")+"";
+            gengList.add(gengSalary);
+        }
+        vo.setDataList(dataList);
+        vo.setGetActualList(getActualList);
+        vo.setGetAllList(getAllList);
+        vo.setGengList(gengList);
+        vo.setGuoList(guoList);
+
+        BaoZiTongJiVo baoZiTongJiVo = shopBaoziMapper.selectTongJi(shopBaozi);
+        vo.setGetAllMoney(baoZiTongJiVo.getCurGetAllMoney());
+        vo.setGetActualMoney(baoZiTongJiVo.getCurActualMoney());
+        vo.setPutAllMoney(baoZiTongJiVo.getCurPutAllMoney());
+        vo.setGuoSalary(baoZiTongJiVo.getCurFengMoney());
+        vo.setShuoSalary(baoZiTongJiVo.getCurGengMoney());
+        vo.setAllSalary(baoZiTongJiVo.getCurFengaAndShuoMoney());
+        vo.setPutHouseMoney(baoZiTongJiVo.getCurPutHouseMoney());
         return vo;
     }
 

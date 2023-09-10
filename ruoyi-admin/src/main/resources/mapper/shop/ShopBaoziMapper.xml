@@ -27,6 +27,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="curGetAllMoney"    column="curGetAllMoney"    />
         <result property="curPutAllMoney"    column="curPutAllMoney"    />
         <result property="curActualMoney"    column="curActualMoney"    />
+        <result property="curGengMoney"    column="curGengMoney"    />
+        <result property="curFengMoney"    column="curFengMoney"    />
+        <result property="curFengaAndShuoMoney"    column="curFengaAndShuoMoney"    />
+        <result property="curPutHouseMoney"    column="curPutHouseMoney"    />
     </resultMap>
 
     <sql id="selectShopBaoziVo">
@@ -64,7 +68,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
             SUM(get_all_money) as curGetAllMoney,
             SUM(put_money) as curPutAllMoney,
-            SUM(actual_money)	as curActualMoney
+            SUM(actual_money)	as curActualMoney,
+            SUM(put_house_money)	as curPutHouseMoney,
+            SUM(guo_salary)	as curFengMoney,
+            SUM(geng_salary)	as curGengMoney,
+            SUM(guo_salary)+SUM(geng_salary) as curFengaAndShuoMoney
         FROM
             shop_baozi
         WHERE
@@ -150,4 +158,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectZheXianTongJi" parameterType="ShopBaozi" resultType="map">
+        SELECT
+        create_date,get_all_money,actual_money,guo_salary,geng_salary
+        FROM
+        shop_baozi
+        WHERE
+        <if test="queryMonth != null ">
+            date_format(create_date, '%Y %m') = date_format(DATE_SUB(#{queryMonth}, INTERVAL 0 MONTH),'%Y %m')
+        </if>
+        <if test="queryMonth == null ">
+            date_format(create_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+        </if>
+        ORDER BY create_date asc
+        --         //查询当前月份
+        --         select date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH), '%m')
+        --         //查询上个月月份
+        --         select date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH), '%m')
+        --         //查询下个月份
+        --         select date_format(DATE_SUB(curdate(), INTERVAL -1 MONTH), '%m')
+    </select>
 </mapper>

@@ -52,3 +52,12 @@ export function baoZiTongJi(data) {
 
   })
 }
+
+export function baoziZheXianTongJi(data) {
+  return request({
+    url: '/shop/baozi/zheXianTongJi',
+    method: 'post',
+    data: data
+
+  })
+}

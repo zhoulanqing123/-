@@ -7,6 +7,11 @@ public class BaoZiTongJiVo {
     private String curPutAllMoney;
     private String curActualMoney;
 
+    private String curGengMoney;
+    private String curFengMoney;
+    private String curFengaAndShuoMoney;
+    private String curPutHouseMoney;
+
     public String getCurMonth() {
         return curMonth;
     }
@@ -37,5 +42,37 @@ public class BaoZiTongJiVo {
 
     public void setCurActualMoney(String curActualMoney) {
         this.curActualMoney = curActualMoney;
+    }
+
+    public String getCurGengMoney() {
+        return curGengMoney;
+    }
+
+    public void setCurGengMoney(String curGengMoney) {
+        this.curGengMoney = curGengMoney;
+    }
+
+    public String getCurFengMoney() {
+        return curFengMoney;
+    }
+
+    public void setCurFengMoney(String curFengMoney) {
+        this.curFengMoney = curFengMoney;
+    }
+
+    public String getCurFengaAndShuoMoney() {
+        return curFengaAndShuoMoney;
+    }
+
+    public void setCurFengaAndShuoMoney(String curFengaAndShuoMoney) {
+        this.curFengaAndShuoMoney = curFengaAndShuoMoney;
+    }
+
+    public String getCurPutHouseMoney() {
+        return curPutHouseMoney;
+    }
+
+    public void setCurPutHouseMoney(String curPutHouseMoney) {
+        this.curPutHouseMoney = curPutHouseMoney;
     }
 }

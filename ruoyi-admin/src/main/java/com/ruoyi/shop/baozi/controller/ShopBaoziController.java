@@ -2,6 +2,8 @@ package com.ruoyi.shop.baozi.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.shop.huajia.domain.ShopHuajia;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,5 +111,14 @@ public class ShopBaoziController extends BaseController
     public AjaxResult tongJi(@RequestBody ShopBaozi shopBaozi)
     {
         return success(shopBaoziService.selectTongJi(shopBaozi));
+    }
+
+    /**
+     * 统计数据(折线图)
+     */
+    @PostMapping("zheXianTongJi")
+    public AjaxResult zheXIanTongJi(@RequestBody ShopBaozi shopBaozi)
+    {
+        return success(shopBaoziService.selectZheXianTongJi(shopBaozi));
     }
 }

@@ -82,6 +82,15 @@
           v-hasPermi="['shop:baozi:export']"
         >导出</el-button>
       </el-col>
+      <el-col :span="3">
+        <el-button
+          type=""
+          plain
+          icon="el-icon-chart"
+          size="mini"
+          @click="openFenXi = true"
+        >当月数据报表</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
     <el-div :gutter="40" ref="tongji" :model="tongji" :data="getTongJi"  >
@@ -113,7 +122,7 @@
       </el-col>
     </el-div>
 
-    <el-table v-loading="loading" :data="baoziList" :cell-style="columnStyle" @selection-change="handleSelectionChange" >
+    <el-table v-loading="loading" :data="baoziList" show-summary :summary-method="getSummaries" :cell-style="columnStyle" @selection-change="handleSelectionChange" >
       <el-table-column type="selection" width="55" align="center" />
 <!--      <el-table-column label="id" align="center" prop="id" />-->
       <el-table-column label="当天时间" align="center" prop="createDate" width="180">
@@ -121,41 +130,102 @@
           <span>{{ parseTime(scope.row.createDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当日星期" align="center" prop="day" />
-      <el-table-column label="店铺名称" align="center" prop="name" />
-      <el-table-column label="支付宝收款金额" align="center" prop="getPayMoney" />
-      <el-table-column label="微信收款金额" align="center" prop="getWechatMoney" />
-      <el-table-column label="现金收款金额" align="center" prop="getMoney" />
-      <el-table-column label="当日营业额" align="center" prop="getAllMoney"  />
-      <el-table-column label="当日进货金额" align="center" prop="putMoney" />
-      <el-table-column label="房租" align="center" prop="putHouseMoney" />
+      <el-table-column @click='innerEdit(scope.$index, scope.row,baoziList)' label="当日星期" align="center" prop="day" >
+      </el-table-column>
+      <el-table-column label="店铺名称" align="center" prop="name"/>
+      <el-table-column label="支付宝收款金额" align="center" prop="getPayMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getPayMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,baoziList)' v-else>{{ scope.row.getPayMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="微信收款金额" align="center" prop="getWechatMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getWechatMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,baoziList)' v-else>{{ scope.row.getWechatMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="现金收款金额" align="center" prop="getMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,baoziList)' v-else>{{ scope.row.getMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="当日营业额" align="center" prop="getAllMoney"/>
+      <el-table-column label="当日进货金额" align="center" prop="putMoney" >
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.putMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,baoziList)' v-else>{{ scope.row.putMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="房租" align="center" prop="putHouseMoney" >
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.putHouseMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,baoziList)' v-else>{{ scope.row.putHouseMoney }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="当日净利润" align="center" prop="actualMoney" />
       <el-table-column label="郭迎凤工资" align="center" prop="guoSalary" />
       <el-table-column label="耿世芳工资" align="center" prop="gengSalary" />
       <el-table-column label="进货内容" align="center" prop="putContent" >
         <template slot-scope="scope">
-          <div v-html="scope.row.putContent"></div>
+          <template v-if="scope.row.edit">
+            <el-input class="ql-editor edit-input" size="small" v-model="scope.row.putContent" ></el-input>
+          </template>
+          <div v-html="scope.row.putContent" class="ql-editor" @click='innerEdit(scope.$index, scope.row,baoziList)' v-else="scope.row.putContent">{{ scope.row.putContent }}</div>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['shop:baozi:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['shop:baozi:remove']"
-          >删除</el-button>
+          <el-button v-if="scope.row.edit" type="success" v-hasPermi="['shop:baozi:edit']" @click="confirmEdit(scope.$index, scope.row)" size="small" >保存</el-button>
+          <el-button v-else type="text" icon="el-icon-edit"  v-hasPermi="['shop:baozi:edit']" @click='handleUpdate(scope.row)' size="mini"> 编辑</el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="text"-->
+          <!--            icon="el-icon-edit"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['shop:huajia:edit']"-->
+          <!--          >修改</el-button>-->
+          <el-button v-if="scope.row.edit" type="warning" v-hasPermi="['shop:baozi:remove']" @click="cancelEdit(scope.row)" size="small" >取消</el-button>
+          <el-button v-else type="text" icon="el-icon-edit"  @click='handleUpdate(scope.row)'  v-hasPermi="['shop:baozi:remove']" size="mini"> 删除</el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="text"-->
+          <!--            icon="el-icon-delete"-->
+          <!--            @click="handleDelete(scope.row)"-->
+          <!--            v-hasPermi="['shop:huajia:remove']"-->
+          <!--          >删除</el-button>-->
         </template>
       </el-table-column>
+<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['shop:baozi:edit']"-->
+<!--          >修改</el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['shop:baozi:remove']"-->
+<!--          >删除</el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
 
     <pagination
@@ -214,7 +284,7 @@
           <editor v-model="form.putContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea"  placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -222,12 +292,27 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <template>
+      <el-dialog  @open="handleFenXi()"  :title="title1" :visible.sync="openFenXi"  width="1800px"  append-to-body>
+        <div style="overflow: hidden">
+          <div>
+            <div id="newecharts" style="width:1800px;height:600px"  ref="chart"></div>
+          </div>
+          <div>
+            <div id="newecharts2" style="width:500px;height:200px;float: left"  ref="chart2"></div>
+            <div id="newecharts3" style="width:500px;height:200px;float: right"  ref="chart3"></div>
+          </div>
+        </div>
+      </el-dialog>
+    </template>
   </div>
 </template>
 
 <script>
-import {listBaozi, getBaozi, delBaozi, addBaozi, updateBaozi, baoZiTongJi} from "@/api/shop/baozi";
+import {listBaozi, getBaozi, delBaozi, addBaozi, updateBaozi, baoZiTongJi, baoziZheXianTongJi} from "@/api/shop/baozi";
 import {red} from "chalk";
+import {huaJiaZheXianTongJi, updateHuajia} from "@/api/shop/huajia";
 
 export default {
   name: "Baozi",
@@ -251,8 +336,10 @@ export default {
       tongji: {},
       // 弹出层标题
       title: "",
+      title1: "当月数据报表",
       // 是否显示弹出层
       open: false,
+      openFenXi: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -286,6 +373,65 @@ export default {
     this.getTongJi();
   },
   methods: {
+    cancelEdit(row){
+      row.edit = false;
+      this.getList();
+      this.getTongJi();
+    },
+
+    innerEdit(index,row,rows){
+      var isEdit = true;
+      rows.forEach((col,index)=>{
+        if(col.edit==true){
+          isEdit = false;
+        }
+      })
+      console.log(isEdit)
+      if(isEdit){
+        row.edit = true;
+      }
+    },
+    confirmEdit(index,row){
+      console.log(row)
+      row.edit = false;
+      updateBaozi(row).then(response => {
+        this.$modal.msgSuccess("修改成功");
+        this.open = false;
+        this.getList();
+        this.getTongJi();
+      });
+    },
+
+    // 对列进行合算
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        // 只对amount这一列进行总计核算。
+        if (column.property === 'putMoney' || column.property === 'getAllMoney' || column.property === 'actualMoney' || column.property === 'putHouseMoney') {
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              }else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          } else {
+            sums[index] = '---'
+          }
+        }
+      });
+      return sums;
+    },
+
     defaultDate() {
       this.reset();
       this.open = true;
@@ -304,6 +450,7 @@ export default {
       }
 
     },
+
     /** 查询包子统计数据 */
     getTongJi(){
       this.loading = true;
@@ -316,6 +463,9 @@ export default {
     getList() {
       this.loading = true;
       listBaozi(this.queryParams).then(response => {
+        response.rows.forEach(item => {
+          this.$set(item, 'edit', false)
+        })
         this.baoziList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -418,7 +568,192 @@ export default {
       this.download('shop/baozi/export', {
         ...this.queryParams
       }, `baozi_${new Date().getTime()}.xlsx`)
-    }
+    },
+    initEcharts() {
+
+      baoziZheXianTongJi(this.queryParams).then(response => {
+        let data = response.data;
+        this.date = data.dataList;
+        this.actual = data.getActualList;
+        this.all = data.getAllList;
+        this.guo = data.guoList;
+        this.shuo = data.shuoList;
+        let myChart = this.$echarts.init(this.$refs.chart);
+        // 绘制图表
+        let option = {
+          title: {
+            text: '本月收入'
+          },
+          legend: {
+            data: ['每天收入', '净利润', '耿工资', '凤工资']
+          },
+          tooltip: {},
+          axisLabel : {
+            interval : 0,
+            rotate : 30,
+            magin :10,
+          },
+          xAxis: {
+            name: '日期',
+            data: this.date
+          },
+          yAxis: {
+            name: '金额'
+
+          },
+          series: [{
+            name: '每天收入',
+            type: 'line',
+            data: this.all,
+            itemStyle:{
+              normal:{
+                label:{
+                  show:true //在每个上面显示当前值
+                }
+              }
+            }
+          },
+            {
+              name: '净利润',
+              type: 'line',
+              data: this.actual,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
+            },
+            {
+              name: '耿工资',
+              type: 'line',
+              data: this.shuo,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
+            },
+            {
+              name: '凤工资',
+              type: 'line',
+              data: this.guo,
+              itemStyle:{
+                normal:{
+                  label:{
+                    show:true //在每个上面显示当前值
+                  }
+                }
+              }
+            }
+          ]
+        };
+        myChart.setOption(option)
+
+        let myChart2 = this.$echarts.init(this.$refs.chart2);
+        let option2 = {
+          legend: {
+            orient: 'vertical',
+            x:'right',      //可设定图例在左、右、居中
+            y:'center',
+            data: [
+              '房租',
+              `净利润`,
+              `进货`
+            ],
+          },
+          title :{
+            text: '本月总收入'+data.getAllMoney
+          },
+          series: [
+            {
+              type: 'pie',      //type为pie，表示图表为饼图
+              radius: '55%',
+              label: {
+                show: true,
+                formatter: "{b} : {c} ({d}%)" // b代表名称，c代表对应值，d代表百分比
+              },
+              data: [
+                {
+                  value: data.putHouseMoney,
+                  name: '房租'
+                },
+                {
+                  value: data.getActualMoney,
+                  name: '净利润'
+                },
+                {
+                  value: data.putAllMoney,
+                  name: '进货'
+                }
+              ]
+            }
+          ]
+        };
+        myChart2.setOption(option2)
+
+        let myChart3 = this.$echarts.init(this.$refs.chart3);
+        let option3 = {
+          legend: {
+            orient: 'vertical',
+            x:'right',      //可设定图例在左、右、居中
+            y:'center',
+            data: [
+              '总工资',
+              `耿
+
+
+
+              工资`,
+              `郭工资`
+            ],
+          },
+          avoidLabelOverlap : false,
+          title: {
+            text: "总工资"+data.allSalary
+          },
+          series: [
+            {
+              type: 'pie',      //type为pie，表示图表为饼图
+              radius: '55%',
+              label: {
+                show: true,
+                formatter: "{b} : {c} ({d}%)" // b代表名称，c代表对应值，d代表百分比
+              },
+              data: [
+                // {
+                //   value: data.allSalary,
+                //   name: '总工资'
+                // },
+                {
+                  value: data.shuoSalary,
+                  name: '耿工资'
+                },
+                {
+                  value: data.guoSalary,
+                  name: '郭工资'
+                }
+              ]
+            }
+          ]
+        };
+        myChart3.setOption(option3)
+      });
+
+      // 基于准备好的dom，初始化echarts实例
+
+    },
+    /** 数据分析操作 */
+    handleFenXi() {
+      this.$nextTick(() => {
+
+        //  执行echarts方法
+      })
+      this.initEcharts()
+    },
   }
 };
 </script>

@@ -1,6 +1,8 @@
 package com.ruoyi.shop.baozi.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import com.ruoyi.shop.baozi.domain.ShopBaozi;
 import com.ruoyi.shop.baozi.vo.BaoZiTongJiVo;
 
@@ -61,4 +63,6 @@ public interface ShopBaoziMapper
     public int deleteShopBaoziByIds(Long[] ids);
 
     BaoZiTongJiVo selectTongJi(ShopBaozi shopBaozi);
+
+    List<Map> selectZheXianTongJi(ShopBaozi shopBaozi);
 }

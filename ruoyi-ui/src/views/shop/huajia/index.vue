@@ -151,7 +151,7 @@
       </el-col>
     </el-div>
 
-    <el-table v-loading="loading" :data="huajiaList" @selection-change="handleSelectionChange" :cell-style="columnStyle">
+    <el-table v-loading="loading" :data="huajiaList" show-summary :summary-method="getSummaries" @selection-change="handleSelectionChange" :cell-style="columnStyle">
       <el-table-column type="selection" width="55" align="center" />
 <!--      <el-table-column label="id" align="center" prop="id" />-->
       <el-table-column label="当天时间" align="center" prop="createDate" width="180">
@@ -159,39 +159,82 @@
           <span>{{ parseTime(scope.row.createDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当日星期" align="center" prop="day" />
-      <el-table-column label="店铺名称" align="center" prop="name" />
-      <el-table-column label="支付宝收款金额" align="center" prop="getPayMoney" />
-      <el-table-column label="微信收款金额" align="center" prop="getWechatMoney" />
-      <el-table-column label="现金收款金额" align="center" prop="getMoney" />
-      <el-table-column label="当日营业额" align="center" prop="getAllMoney" />
-      <el-table-column label="当日进货金额" align="center" prop="putMoney" />
-      <el-table-column label="房租" align="center" prop="putHouseMoney" />
+      <el-table-column @click='innerEdit(scope.$index, scope.row,huajiaList)' label="当日星期" align="center" prop="day" >
+      </el-table-column>
+      <el-table-column label="店铺名称" align="center" prop="name"/>
+      <el-table-column label="支付宝收款金额" align="center" prop="getPayMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getPayMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else>{{ scope.row.getPayMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="微信收款金额" align="center" prop="getWechatMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getWechatMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else>{{ scope.row.getWechatMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="现金收款金额" align="center" prop="getMoney">
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.getMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else>{{ scope.row.getMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="当日营业额" align="center" prop="getAllMoney"/>
+      <el-table-column label="当日进货金额" align="center" prop="putMoney" >
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.putMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else>{{ scope.row.putMoney }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="房租" align="center" prop="putHouseMoney" >
+        <template slot-scope="scope">
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.putHouseMoney"></el-input>
+          </template>
+          <span @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else>{{ scope.row.putHouseMoney }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="当日净利润" align="center" prop="actualMoney" />
       <el-table-column label="郭迎凤工资" align="center" prop="guoSalary" />
       <el-table-column label="耿硕工资" align="center" prop="shuoSalary" />
       <el-table-column label="进货内容" align="center" prop="putContent" >
         <template slot-scope="scope">
-            <div v-html="scope.row.putContent"></div>
+          <template v-if="scope.row.edit">
+            <el-input class="edit-input" size="small" v-model="scope.row.putContent" ></el-input>
+          </template>
+            <div v-html="scope.row.putContent" @click='innerEdit(scope.$index, scope.row,huajiaList)' v-else="scope.row.putContent">{{ scope.row.putContent }}</div>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['shop:huajia:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['shop:huajia:remove']"
-          >删除</el-button>
+          <el-button v-if="scope.row.edit" type="success" v-hasPermi="['shop:huajia:edit']" @click="confirmEdit(scope.$index, scope.row)" size="small" >保存</el-button>
+          <el-button v-else type="text" icon="el-icon-edit"  v-hasPermi="['shop:huajia:edit']" @click='handleUpdate(scope.row)' size="mini"> 编辑</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['shop:huajia:edit']"-->
+<!--          >修改</el-button>-->
+          <el-button v-if="scope.row.edit" type="warning" v-hasPermi="['shop:huajia:remove']" @click="cancelEdit(scope.row)" size="small" >取消</el-button>
+          <el-button v-else type="text" icon="el-icon-edit"  @click='handleUpdate(scope.row)'  v-hasPermi="['shop:huajia:remove']" size="mini"> 删除</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['shop:huajia:remove']"-->
+<!--          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -288,6 +331,7 @@ import {
   huaJiaTongJi,
   huaJiaZheXianTongJi
 } from "@/api/shop/huajia";
+import Vue from "vue";
 
 export default {
   name: "Huajia",
@@ -348,6 +392,66 @@ export default {
     this.getTongJi();
   },
   methods: {
+    cancelEdit(row){
+      row.edit = false;
+      this.getList();
+      this.getTongJi();
+    },
+
+    innerEdit(index,row,rows){
+      var isEdit = true;
+      rows.forEach((col,index)=>{
+        if(col.edit==true){
+          isEdit = false;
+        }
+      })
+      console.log(isEdit)
+      if(isEdit){
+        row.edit = true;
+      }
+    },
+    confirmEdit(index,row){
+      console.log(row)
+      row.edit = false;
+      updateHuajia(row).then(response => {
+        this.$modal.msgSuccess("修改成功");
+        this.open = false;
+        this.getList();
+        this.getTongJi();
+      });
+    },
+
+
+      // 对列进行合算
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        // 只对amount这一列进行总计核算。
+        if (column.property === 'putMoney'  || column.property === 'getAllMoney' || column.property === 'actualMoney' || column.property === 'putHouseMoney') {
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              }else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          } else {
+            sums[index] = '---'
+          }
+        }
+      });
+      return sums;
+    },
+
     columnStyle({ row, column, rowIndex, columnIndex }) {
       if (columnIndex == 7 || columnIndex == 10 ) {
         //第二三第四列的背景色就改变了2和3都是列数的下标
@@ -372,6 +476,10 @@ export default {
     getList() {
       this.loading = true;
       listHuajia(this.queryParams).then(response => {
+        response.rows.forEach(item => {
+          this.$set(item, 'edit', false)
+        })
+        console.log(response.rows);
         this.huajiaList = response.rows;
         this.total = response.total;
         this.loading = false;

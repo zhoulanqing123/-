@@ -3,6 +3,7 @@ package com.ruoyi.shop.baozi.service;
 import java.util.List;
 import com.ruoyi.shop.baozi.domain.ShopBaozi;
 import com.ruoyi.shop.baozi.vo.BaoZiTongJiVo;
+import com.ruoyi.shop.huajia.vo.ZheXianTongJiVo;
 
 /**
  * baoziService接口
@@ -61,4 +62,6 @@ public interface IShopBaoziService
     public int deleteShopBaoziById(Long id);
 
     BaoZiTongJiVo selectTongJi(ShopBaozi shopBaozi);
+
+    ZheXianTongJiVo selectZheXianTongJi(ShopBaozi shopBaozi);
 }
